@@ -1,0 +1,5 @@
+---
+
+drone_version: 0.4
+remote_driver: github
+remote_config: "https://github.com?client_id=2a8044b90c0ffdade194&client_secret=7b358a8a24dd4d001003e57dc9ea74329d73e764"

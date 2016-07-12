@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    remote_user: root
+  remote_user: '{{ remote_user }}'
+  become: true
+  become_user: root
+  pre_tasks:
+    - name: Install default packages
+      action: apt pkg={{ item }} state=present update_cache=yes
+      with_items:
+        - htop
+        - tree
+        - unzip
+        - jq
+        - fail2ban
+        - vim
+        - mosh
+        - ufw
+
+    - shell: uname -r
+      register: kernel_version
+    - name: kernel aufs storage driver support 
+      apt: name=linux-image-extra-{{ kernel_version.stdout }} state=present
+  roles:
+    - { role: docker, docker_version: 1.9.1 }
+    - { role: compose, compose_version: 1.5.2 }
+    - { role: nginx, when: consul_server }
+    - { role: consul-new, consul_advertise_addr: '{{ public_ip }}', consul_bind_addr: '{{ private_ip }}', consul_node_name: '{{ hostname }}' }
+    - { role: drone-io, when: consul_server }
+    # - { role: vault, vault_backend_consul_address: '{{ vault_server_ip }}:8500', vault_backend_fallback_address: '{{ private_ip }}:8500', vault_listener_tcp_address: '{{ private_ip }}:8200' }
+    - { role: store-web, when: not consul_server }
+    # - { role: nomad }

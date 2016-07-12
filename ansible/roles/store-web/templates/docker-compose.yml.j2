@@ -1,0 +1,28 @@
+store:
+  image: {{ store_repo }}:{{ store_tag }}
+  command: bundle exec {{ app_server }} -C {{ app_server_conf }}
+  environment:
+    RAILS_ENV: {{ rails_env }}
+    SECRET_KEY_BASE: {{ rails_secret }}
+  volumes:
+    - "/{{ store_dir }}"
+  links:
+    - db
+  restart: always
+db:
+  image: postgres:{{ postgres_version }}
+  environment:
+    POSTGRES_USER: {{ postgres_user }}
+    PGDATA: {{ pgdata_dir }}
+  volumes:
+    - {{ pgdata_dir_host }}:{{ pgdata_dir }}
+  restart: always
+nginx:
+  image: nginx:{{ nginx_version }}
+  volumes:
+    - /data/nginx/conf.d:/etc/nginx/conf.d
+  volumes_from:
+    - store
+  ports: 
+    - {{ nginx_ports }}
+  restart: always

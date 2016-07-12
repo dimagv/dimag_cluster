@@ -1,0 +1,59 @@
+---
+# defaults file for vault
+
+vault_version: 0.5.0
+vault_sha256sum: f81accce15313881b8d53b039daf090398b2204b1154f821a863438ca2e5d570
+
+vault_backend: consul
+vault_disable_mlock: false
+vault_default_lease_ttl: "720h"
+vault_max_lease_ttl: "720h"
+vault_telemetry: false
+
+vault_scheme: http://
+
+vault_backend_consul_advertise_addr: ''
+vault_backend_consul_path: "vault/"
+vault_backend_consul_address: ''
+vault_backend_consul_scheme: ''
+vault_backend_consul_datacenter: ''
+vault_backend_consul_token: ''
+vault_backend_consul_tls_skip_verify: true
+vault_backend_consul_tls_ca_file: ''
+vault_backend_consul_tls_cert_file: ''
+vault_backend_consul_tls_key_file: ''
+
+vault_backend_zookeeper_advertise_addr: ''
+vault_backend_zookeeper_path: "vault/"
+vault_backend_zookeeper_address: "http://localhost:4001"
+
+vault_backend_etcd_advertise_addr: ''
+vault_backend_etcd_path: "vault/"
+vault_backend_etcd_address: "localhost:2181"
+
+vault_backend_s3_advertise_addr: ''
+vault_backend_s3_bucket: ''
+vault_backend_s3_access_key: ''
+vault_backend_s3_secret_key: ''
+vault_backend_s3_session_token: ''
+vault_backend_s3_region: ''
+
+vault_backend_mysql_advertise_addr: ''
+vault_backend_mysql_username: ''
+vault_backend_mysql_password: ''
+vault_backend_mysql_address: "127.0.0.1:3306"
+vault_backend_mysql_database: "vault"
+vault_backend_mysql_table: "vault"
+vault_backend_mysql_tls_ca_file: ''
+
+vault_backend_file_path: ''
+
+vault_listener_tcp_address: "127.0.0.1:8200"
+vault_listener_tcp_tls_disable: true
+vault_listener_tcp_tls_cert_file: ''
+vault_listener_tcp_tls_key_file: ''
+vault_listener_tcp_tls_min_version: tls12
+
+vault_telemetry_statsite_address: ''
+vault_telemetry_statsd_address: ''
+vault_telemetry_disable_hostname: false

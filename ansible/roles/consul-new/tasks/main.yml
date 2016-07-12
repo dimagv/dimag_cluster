@@ -1,0 +1,144 @@
+---
+
+- name: Directories are present
+  file:
+    dest: "{{ item }}"
+    state: directory
+  with_items: directories
+  tags: consul
+
+- name: Files are present
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items: files
+  tags: consul
+
+- name: Server watchers
+  copy: >
+    src=server_watchers.json
+    dest={{ consul_config_dir }}/server_watchers.json
+    mode=0644
+  when: consul_server
+  tags: consul
+
+- name: Store watchers
+  copy: >
+    src=store_watchers.json
+    dest={{ consul_config_dir }}/store_watchers.json
+    mode=0644
+  when: not consul_server
+  tags: consul
+
+- name: Templates are present
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items: templates
+  tags: consul
+
+- name: Create Consul group
+  group: name={{ consul_group }} system=yes state=present
+  tags: consul
+
+- name: Create Consul user
+  user: >
+    name={{ consul_user }}
+    shell=/bin/false
+    createhome=no
+    group={{ consul_group }}
+    system=yes
+    state=present
+  tags: consul
+
+- name: Download Consul
+  get_url: >
+    url={{ consul_url }}
+    dest={{ consul_download_dir }}/consul.zip
+    sha256sum={{ consul_sha256sum }}
+  tags: consul
+
+- name: Unzip Consul to installation directory
+  command: unzip {{ consul_download_dir }}/consul.zip -d {{ consul_install_dir }}
+  args:
+    creates: "{{ consul_install_dir }}/consul"
+  tags: consul
+
+- name: Download Consul Template
+  get_url: >
+    url={{ consul_template_url }}
+    dest={{ consul_download_dir }}/consul_template.zip
+    sha256sum={{ consul_template_sha256sum }}
+  tags: consul
+
+- name: Unzip Consul Template to installation directory
+  command: unzip {{ consul_download_dir }}/consul_template.zip -d {{ consul_install_dir }}
+  args:
+    creates: "{{ consul_install_dir }}/consul-template"
+  tags: consul
+
+- name: Install jq
+  apt: name=jq state=present
+
+- include: webui.yml
+  when: consul_webui
+  tags:
+    - consul
+    - consul-webui
+
+- name: Create Consul configuration file
+  template: >
+    src=consul.json.j2
+    dest={{ consul_config_dir }}/consul.json
+  register: result
+  tags: consul
+
+- name: Service is started
+  service:
+    name=consul
+    state=started
+    pattern=/usr/local/bin/consul
+  tags: consul
+
+- name: Node is in cluster
+  shell: consul join {{ consul_master_ip }}
+  when: consul_master_ip is defined and consul_master_ip != ""
+  tags: consul
+
+- name: Configurations check are present
+  template: >
+    src=consul_check.json.j2
+    dest={{ consul_config_dir }}/consul_check.json
+  register: result
+  tags: consul
+
+- name: Consul is restarted
+  shell: killall -HUP consul
+  when: result|changed
+  tags: consul
+
+- name: Registrator is running
+  docker:
+    name: registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    hostname: "{{ hostname }}"
+    image: gliderlabs/registrator
+    command: -ip {{ private_ip }} consul://{{ private_ip }}:8500
+  tags: consul
+
+- name: Registrator KV is running
+  docker:
+    name: registrator-kv
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    hostname: "{{ hostname }}"
+    image: gliderlabs/registrator
+    command: -ip {{ private_ip }} consulkv://{{ private_ip }}:8500/services
+  tags: consul
+
+- name: Python-consul is present
+  pip: name=python-consul version=0.6.0 state=present
+  tags: consul

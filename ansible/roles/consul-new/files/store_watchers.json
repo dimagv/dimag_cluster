@@ -1,0 +1,9 @@
+{
+  "watches": [
+    {
+	  "type": "event",
+	  "name": "store-deploy",
+	  "handler": "/data/consul/scripts/store_deploy.sh >>/data/consul/logs/watchers.log"
+	}
+  ]
+}

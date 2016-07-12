@@ -1,0 +1,66 @@
+---
+
+- name: Nginx dirs are present
+  file:
+    dest: "{{ item }}"
+    state: directory
+  with_items: nginx_directories
+  tags: store-nginx
+
+- name: Store nginx config
+  template: >
+    src=store-nginx.conf.j2
+    dest=/data/nginx/conf.d/store.conf
+    mode=0644
+  tags: store-nginx
+
+- name: Store dirs are present
+  file:
+    dest: "{{ item }}"
+    state: directory
+  with_items: store_directories
+  tags: store
+
+- name: Store docker-compose.yml
+  template: >
+    src=docker-compose.yml.j2
+    dest=/data/store/docker-compose.yml
+    mode=0644
+  tags: store
+
+- name: Run store db commands
+  shell: docker-compose -f /data/store/docker-compose.yml run --rm store rake db:create db:migrate
+  register: result
+  tags: store
+
+# - name: Get rails secret
+#   shell: docker-compose -f /data/store/docker-compose.yml run --rm store rake secret
+#   register: secret
+#   no_log: yes
+#   tags: store
+
+# - name: Set rails secret
+#   when: secret
+#   no_log: yes
+#   lineinfile:
+#     dest: /etc/environment
+#     state: present
+#     regexp: 'SECRET_KEY_BASE=".*"'
+#     line: 'SECRET_KEY_BASE="{{secret.stdout}}"'
+
+- name: Start store
+  command: docker-compose -f /data/store/docker-compose.yml up -d
+  when: result
+  tags: store
+
+- name: Set store compose dir
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    regexp: 'STORE_COMPOSE_DIR=".*"'
+    line: 'STORE_COMPOSE_DIR="/data/store/"'
+
+# - name: nginx container is restarted
+#   shell: docker kill -s HUP nginx
+#   when: result|changed
+#   tags: store-nginx

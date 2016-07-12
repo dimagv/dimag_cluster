@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+compose_dir="/data/store/"
+
+read -r JSON
+echo ""
+echo "-------------------------------------------------------------------------"
+echo "Start [`date +'%Y-%m-%d %H:%M:%S'`]"
+echo ""
+echo "[INFO] input json : $JSON"
+echo "$JSON" | jq -r '.[] | .Payload' | while read payload_raw
+do
+	PAYLOAD="$(echo $payload_raw | base64 --decode)"
+
+	if [[ -z "$PAYLOAD" ]]; then
+	    echo "[ERROR] no payload"
+	    exit
+	fi
+
+	echo "[INFO] image tag : $PAYLOAD"
+
+	compose_override_file="docker-compose.override.yml"
+	
+	if [ "$PAYLOAD" = "latest" ]; then
+	    cd $compose_dir
+
+	    if [ -f $compose_override_file ]; then
+			echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] rm old $compose_override_file"
+	   		sudo rm $compose_override_file
+		fi
+
+	    echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] stop container"
+	    sudo docker-compose stop store
+	    echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] rm container"
+	    sudo docker-compose rm -f store
+	    echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] pull image"
+	    sudo docker-compose pull store
+	    echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] up container"
+	    sudo docker-compose up -d
+	else
+		cd $compose_dir
+
+		if [ -f $compose_override_file ]; then
+			echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] rm old $compose_override_file"
+	   		sudo rm $compose_override_file
+		fi
+
+		echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] create $compose_override_file"
+		sudo touch $compose_override_file
+		echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] write to $compose_override_file"
+		printf "store:%s\n  image: dimag/store:$PAYLOAD" | sudo tee $compose_override_file > /dev/null
+		echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] stop container"
+		sudo docker-compose stop store
+		echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] rm container"
+	    sudo docker-compose rm -f store
+	    echo "[INFO `date +'%Y-%m-%d %H:%M:%S'`] up container"
+	    sudo docker-compose up -d
+	fi
+done
+echo ""
+echo "Finish [`date +'%Y-%m-%d %H:%M:%S'`]"
+echo "-------------------------------------------------------------------------"
+echo ""

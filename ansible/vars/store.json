@@ -1,0 +1,5 @@
+{
+	"consul_server": false,
+	"consul_webui": false,
+	"consul_bootstrap_expect": 1
+}

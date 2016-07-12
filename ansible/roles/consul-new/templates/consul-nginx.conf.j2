@@ -1,0 +1,27 @@
+server {
+  server_name localhost;
+  root /var/www/consul/htdocs;
+
+  # --- listen ----------------------------------------------------------------
+
+  listen *:{{ consul_ui_server_port }};
+
+  # --- locations -------------------------------------------------------------
+
+
+  location / {
+      proxy_pass http://{{ consul_bind_addr }}:{{ consul_ports_http }};
+      {%- if consul_ui_require_auth -%}
+      auth_basic "Restricted";
+      auth_basic_user_file {{ consul_ui_auth_user_file }};
+      {% endif %}
+  }
+
+
+
+  # --- logging ---------------------------------------------------------------
+
+  error_log /var/log/nginx/error-consul.log;
+  access_log /var/log/nginx/access-consul.log;
+
+  }

@@ -1,0 +1,15 @@
+---
+
+- name: Drone.io is running
+  docker:
+    name: drone-io
+    volumes:
+      - /var/lib/drone:/var/lib/drone
+      - /var/run/docker.sock:/var/run/docker.sock
+    image: drone/drone:{{ drone_version }}
+    restart_policy: always
+    ports: 8080:8000
+    env:
+      REMOTE_DRIVER: '{{ remote_driver }}'
+      REMOTE_CONFIG: '{{ remote_config }}'
+  tags: drone-io

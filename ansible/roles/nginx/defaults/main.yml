@@ -1,0 +1,25 @@
+ports:
+  - '80:80'
+
+directories:
+  - /data/nginx/conf.d
+  - /data/nginx/includes
+  - /data/nginx/logs
+  - /data/nginx/upstreams
+  - /data/nginx/templates
+  - /data/nginx/servers
+  - /etc/htpasswd
+
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock
+  - /data/nginx/conf.d:/etc/nginx/conf.d
+  - /data/nginx/includes:/etc/nginx/includes
+  - /data/nginx/upstreams:/etc/nginx/upstreams
+  - /data/nginx/servers:/etc/nginx/servers
+  - /data/nginx/logs:/var/log/nginx
+  - /var/www:/var/www
+  - /etc/htpasswd:/etc/htpasswd
+
+templates: [
+  {src: 'services.conf.j2', dest: '/data/nginx/conf.d/services.conf'}
+]

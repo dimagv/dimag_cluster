@@ -1,0 +1,68 @@
+---
+
+- name: Download Consul webui
+  get_url: >
+    url={{ consul_webui_url }}
+    dest={{ consul_download_dir }}/consul-webui.zip
+    sha256sum={{ consul_webui_sha256sum }}
+  tags:
+    - consul
+    - consul-webui
+
+- name: Create Consul webui installation directory
+  file: >
+    path={{ consul_webui_dir }}
+    owner=root
+    group=root
+    mode=0744
+    state=directory
+  tags:
+    - consul
+    - consul-webui
+
+- name: Unzip Consul webui to installation directory
+  command: unzip {{ consul_download_dir }}/consul-webui.zip -d {{ consul_webui_dir }}
+  args:
+    creates: "{{ consul_webui_dir }}/index.html"
+  tags:
+    - consul
+    - consul-webui
+
+###
+- name: consul nginx config
+  template: >
+    src=consul-nginx.conf.j2
+    dest=/data/nginx/conf.d/consul.conf
+    owner=root
+    group=root
+    mode=0755
+  notify:
+    - restart nginx
+  tags:
+    - consul
+    - consul-webui
+
+- name: create nginx home
+  file: >
+    state=directory
+    path=/var/www/consul/htdocs
+    owner=root
+    group=root
+    mode=0755
+  notify:
+    - restart nginx
+  tags:
+    - consul
+    - consul-webui
+
+- name: copy nginx htpasswd
+  copy: >
+    src=webui_htpasswd
+    dest={{ consul_ui_auth_user_file }}
+    owner=root
+    group=root
+  notify:
+    - restart nginx
+  tags:
+    - consul
+    - consul-webui

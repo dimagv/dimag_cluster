@@ -1,0 +1,26 @@
+---
+
+store_dir: store
+store_tag: latest
+store_repo: dimag/store
+store_directories:
+  - /data/store
+
+rails_env: production
+rails_secret: 6925b4f88a93a29051ceab2de80ba1056ab791331dd461c1d26ce55708dc31ca104fec2be8608196fab449164cf6511ee2c411dfe24bce503c3bae84a8a3430f
+
+nginx_server_name: localhost
+
+postgres_version: 9.5
+postgres_user: gdv
+pgdata_dir: /var/lib/postgresql/data/pgdata
+pgdata_dir_host: /pgdata
+
+nginx_version: 1.9.11
+nginx_ports: "80:80"
+
+nginx_directories:
+  - /data/nginx/conf.d
+
+app_server: puma
+app_server_conf: config/puma.rb

@@ -1,0 +1,9 @@
+# Consul Agent (Upstart unit)
+description "Consul Agent"
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [016]
+
+exec /usr/local/bin/consul agent -data-dir {{ consul_data_dir }} -config-dir {{ consul_config_dir }} >{{ consul_logs_dir }}/{{ consul_log_file }} 2>&1 &
+respawn
+respawn limit 10 10
+kill timeout 10

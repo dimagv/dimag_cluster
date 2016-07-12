@@ -1,0 +1,6 @@
+---
+
+consul_url: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip
+consul_template_url: https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_linux_amd64.zip
+consul_webui_url: https://releases.hashicorp.com/consul/{{ consul_webui_version }}/consul_{{ consul_webui_version }}_web_ui.zip
+

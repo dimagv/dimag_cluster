@@ -1,0 +1,6 @@
+---
+
+docker_service_name: docker
+
+docker_packages:
+  - lxc-docker-{{ docker_version }}

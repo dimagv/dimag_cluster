@@ -1,0 +1,5 @@
+---
+
+- name: restart nginx
+  shell: docker kill -s HUP nginx
+  tags: [nginx]

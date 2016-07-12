@@ -1,0 +1,33 @@
+---
+
+- name: Add Docker APT repository key
+  apt_key: >
+    keyserver=keyserver.ubuntu.com
+    id=36A1D7869245C8950F966E92D8576A8BA88D21E9
+    state=present
+  tags: docker
+
+- name: Add Docker APT repository
+  apt_repository: >
+    repo='deb https://get.docker.com/ubuntu docker main'
+    state=present
+  tags: docker
+
+- name: Install Docker packages
+  apt: name={{ item }} state=present update_cache=yes
+  with_items: docker_packages
+  tags: docker
+
+- name: Ensure docker is started and enabled on boot
+  service: name={{ docker_service_name }} state=started enabled=yes
+  tags: docker
+
+- name: Python-pip is present
+  apt:
+    name: python-pip
+    state: present
+  tags: [docker]
+
+- name: Docker-py is present
+  pip: name=docker-py version=1.7.0 state=present
+  tags: [docker]
