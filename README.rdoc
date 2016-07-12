@@ -22,3 +22,7 @@ Create store node:
   $ ./startup.sh --host store_one --consul_master_ip MASTER_PUBLIC_IP --ansible_vars_file store --force true
 
 Go to http//STORE_PUBLIC_IP
+
+To completely remove
+	go to folder: ./servers/... or ./stores/...
+	$ terraform destroy
