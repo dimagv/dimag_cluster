@@ -1,22 +1,24 @@
 == README
-solidus cluster
+Solidus cluster
+
+Install terraform - https://www.terraform.io/downloads.html
 
 $ git clone git@github.com:sofuckingnice/dimag_cluster.git
 
 $ mv terraform/aws/creds.example terraform/aws/creds
 
-create master node:
+Create master node:
   $ ./startup.sh --host store_master --ansible_vars_file server --machine_path servers --force true
 
-go to https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#Instances:sort=instanceId
+Go to https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#Instances:sort=instanceId
 
-go to http//MASTER_PUBLIC_IP
+Go to http//MASTER_PUBLIC_IP
 
-basic auth:
+Basic auth:
   User Name: admin
   Password: 123321
   
-create store node:
+Create store node:
   $ ./startup.sh --host store_one --consul_master_ip MASTER_PUBLIC_IP --ansible_vars_file store --force true
 
-go to http//STORE_PUBLIC_IP
+Go to http//STORE_PUBLIC_IP
