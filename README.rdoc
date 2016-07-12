@@ -10,7 +10,8 @@ create master node:
 
 go to https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#Instances:sort=instanceId
 
-go to http://MASTER_PUBLIC_IP
+go to http//MASTER_PUBLIC_IP
+
 basic auth:
   User Name: admin
   Password: 123321
@@ -18,4 +19,4 @@ basic auth:
 create store node:
   $ ./startup.sh --host store_one --consul_master_ip MASTER_PUBLIC_IP --ansible_vars_file store --force true
 
-go to http://STORE_PUBLIC_IP
+go to http//STORE_PUBLIC_IP
