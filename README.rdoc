@@ -23,6 +23,6 @@ Create store node:
 
 Go to http//STORE_PUBLIC_IP
 
-To completely remove
+To completely remove:
   go to folder: ./servers/... or ./stores/...
   $ terraform destroy
